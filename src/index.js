@@ -1,12 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import Autocompleter from './App';
 import * as serviceWorker from './serviceWorker';
+
+const ExampleAutoCompleter = React.memo(props => {
+  const [value, setValue] = useState('');
+  return (
+    <Autocompleter
+      items={[
+        'A',
+        'AB',
+        'Abc',
+        'slkjdf',
+        'lsdkfj',
+      ]}
+      value={value}
+      onChange={event => setValue(event.target.value)}
+      filterItems={(items, value) => items.filter(item => item.toLowerCase().includes(value.toLowerCase()))}
+      renderItem={(item, isHilighted) => <div>{item} {isHilighted ? ' hilighted' : ''}</div>}
+      getItemValue={item => item}
+      onSelect={value => setValue(value)}
+    />
+  );
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ExampleAutoCompleter />
   </React.StrictMode>,
   document.getElementById('root')
 );
