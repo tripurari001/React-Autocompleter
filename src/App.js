@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 let ignoreBlur = false;
+let blurOnNextRender = false;
 
 const  keyHandlers = {
     ArrowDown({ event, props, hilightIndex, setOpen, setHilightIndex, open }) {
@@ -34,7 +35,7 @@ const  keyHandlers = {
       }
     },
 
-    Enter({ event, props, hilightIndex, setOpen, setHilightIndex, open, inputEl }) {
+    Enter({ event, props, hilightIndex, setOpen, setHilightIndex, open, inputEl, blurInputOnNextRender}) {
       if (event.keyCode !== 13) {
         return
       }
@@ -47,10 +48,10 @@ const  keyHandlers = {
         event.preventDefault();
         const item =  props.filterItems(props.items, props.value)[hilightIndex];
         const value = props.getItemValue(item);
-        setOpen(false);
-        setHilightIndex(null);
         props.onSelect(value, item);
-        inputEl.current && inputEl.current.blur && inputEl.current.blur();
+        setOpen(false);
+        setHilightIndex(null)
+        blurInputOnNextRender()
       }
     },
 
@@ -69,6 +70,13 @@ const Autocompleter = React.memo(({ className = '', ...props}) => {
   const inputEl = useRef(null);
   const [open, setOpen] = useState(false);
   const [hilightIndex, setHilightIndex] = useState(null);
+
+  useEffect(() => {
+    if (blurOnNextRender) {
+      blurOnNextRender = false;
+      inputEl.current && inputEl.current.blur();
+    }
+  });
 
   const handleFocus = event => {
     setOpen(true);
@@ -93,7 +101,18 @@ const Autocompleter = React.memo(({ className = '', ...props}) => {
   const handleKeyDown = event => {
     const handler = keyHandlers[event.key];
     if (typeof handler === 'function') {
-      handler({ event, props, hilightIndex, setOpen, setHilightIndex, open, inputEl });
+      handler({
+        event,
+        props,
+        hilightIndex,
+        setOpen,
+        setHilightIndex,
+        open,
+        inputEl,
+        blurInputOnNextRender: () => {
+          blurOnNextRender = true;
+        }
+      });
     }
   };
 
