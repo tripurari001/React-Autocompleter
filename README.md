@@ -2,6 +2,27 @@
 
 ## Example
 
+```js
+    <Autocompleter
+      items={[
+        'A',
+        'AB',
+        'Abc',
+        'slkjdf',
+        'lsdkfj',
+      ]}
+      value={value}
+      onChange={event => setValue(event.target.value)}
+      filterItems={(items, value) => items.filter(item => item.toLowerCase().includes(value.toLowerCase()))}
+      renderItem={(item, isHilighted) => (<ListItem selected={isHilighted}><ListItemText>{ item }</ListItemText></ListItem>)}
+      getItemValue={item => item}
+      onSelect={value => setValue(value)}
+      renderInput={props => <Input id="outlined-basic" variant="outlined" { ...props } />}
+      renderMenu={({ renderedItems }) => (<List>{ renderedItems }</List>)}
+    />
+
+```
+
 #### Available Scripts
 
 In the project directory, you can run:
